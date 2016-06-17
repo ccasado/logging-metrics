@@ -1,0 +1,14 @@
+[devqa]
+eshost: elklogging01.rjocta012ahobe-51.cp.globoi.com
+esport: 9200
+esclustername: elk-logging
+
+[prod]
+eshost: elklogging01.rjocta012ahobe-51.cp.globoi.com
+esport: 9200
+esclustername: elk-logging
+
+[Statsd]
+statshost: udp.statsd.globoi.com
+statsport: 8125
+project: glog
