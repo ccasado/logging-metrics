@@ -45,10 +45,11 @@ def metricsByNodes():
 			metrics[first_key + '.os.swap.used_in_bytes'] = node["os"]["swap"]["used_in_bytes"]
 			metrics[first_key + '.jvm.mem.heap_used_percent'] = node["jvm"]["mem"]["heap_used_percent"]
 			metrics[first_key + '.indices.indexing.index_current'] = node["indices"]["indexing"]["index_current"]
+			metrics[first_key + '.indices.indexing.index_time_in_millis'] = node["indices"]["indexing"]["index_time_in_millis"]
 			metrics[first_key + '.indices.search.query_current'] = node["indices"]["search"]["query_current"]
+			metrics[first_key + '.indices.search.query_time_in_millis'] = node["indices"]["search"]["query_time_in_millis"]
 			metrics[first_key + '.indices.docs.count'] = node["indices"]["docs"]["count"]
 			metrics[first_key + '.indices.segments.count'] = node["indices"]["segments"]["count"]
-			#metrics[first_key + '.fs.total.total_in_mbytes'] = node["fs"]["total"]["total_in_bytes"] / 1024 / 1024
 			metrics[first_key + '.fs.total.free_in_mbytes'] = node["fs"]["total"]["free_in_bytes"] / 1024 / 1024
 			metrics[first_key + '.jvm.gc.collectors.young.collection_count'] = node["jvm"]["gc"]["collectors"]["young"]["collection_count"]
 			metrics[first_key + '.jvm.gc.collectors.old.collection_count'] = node["jvm"]["gc"]["collectors"]["old"]["collection_count"]
