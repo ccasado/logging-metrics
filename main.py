@@ -92,7 +92,7 @@ def metricsByCluster():
 
 def sendToStatsd(key, value):
 	stats.incr(key, value)
-	print "%s Sending to statsd - %s:%s" % (strftime("%d %b %Y %H:%M:%S", gmtime()), key, value)
+	#print "%s Sending to statsd - %s:%s" % (strftime("%d %b %Y %H:%M:%S", gmtime()), key, value)
 
 if __name__ == '__main__':
 	s = sched.scheduler(time.time, time.sleep)
