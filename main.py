@@ -50,7 +50,7 @@ def metricsByNodes():
 			metrics[first_key + '.indices.search.query_time_in_millis'] = node["indices"]["search"]["query_time_in_millis"]
 			metrics[first_key + '.indices.docs.count'] = node["indices"]["docs"]["count"]
 			metrics[first_key + '.indices.segments.count'] = node["indices"]["segments"]["count"]
-			metrics[first_key + '.fs.total.free_in_mbytes'] = node["fs"]["total"]["free_in_bytes"] / 1024 / 1024
+			#metrics[first_key + '.fs.total.free_in_mbytes'] = node["fs"]["total"]["free_in_bytes"] / 1024 / 1024
 			metrics[first_key + '.jvm.gc.collectors.young.collection_count'] = node["jvm"]["gc"]["collectors"]["young"]["collection_count"]
 			metrics[first_key + '.jvm.gc.collectors.old.collection_count'] = node["jvm"]["gc"]["collectors"]["old"]["collection_count"]
 		return metrics
