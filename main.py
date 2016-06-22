@@ -38,22 +38,22 @@ def metricsByNodes():
 		metrics = {}
 		for node in es_stats["nodes"].values():
 			node_name = node["name"]
-			first_key = project + '.' + env + '.' + esclustername + '.' + node_name 
-			metrics[first_key + '.os.cpu_percent'] = node["os"]["cpu_percent"]
-			metrics[first_key + '.os.load_average'] = node["os"]["load_average"]
-			metrics[first_key + '.os.mem.free_percent'] = node["os"]["mem"]["free_percent"]
-			metrics[first_key + '.os.mem.used_percent'] = node["os"]["mem"]["used_percent"]
-			metrics[first_key + '.os.swap.used_in_bytes'] = node["os"]["swap"]["used_in_bytes"]
-			metrics[first_key + '.jvm.mem.heap_used_percent'] = node["jvm"]["mem"]["heap_used_percent"]
-			metrics[first_key + '.indices.indexing.index_current'] = node["indices"]["indexing"]["index_current"]
-			metrics[first_key + '.indices.indexing.index_time_in_millis'] = node["indices"]["indexing"]["index_time_in_millis"]
-			metrics[first_key + '.indices.search.query_current'] = node["indices"]["search"]["query_current"]
-			metrics[first_key + '.indices.search.query_time_in_millis'] = node["indices"]["search"]["query_time_in_millis"]
-			metrics[first_key + '.indices.docs.count'] = node["indices"]["docs"]["count"]
-			metrics[first_key + '.indices.segments.count'] = node["indices"]["segments"]["count"]
-			metrics[first_key + '.jvm.gc.collectors.young.collection_count'] = node["jvm"]["gc"]["collectors"]["young"]["collection_count"]
-			metrics[first_key + '.jvm.gc.collectors.old.collection_count'] = node["jvm"]["gc"]["collectors"]["old"]["collection_count"]
 			if node_name in esnodesname:
+				first_key = project + '.' + env + '.' + esclustername + '.' + node_name 
+				metrics[first_key + '.os.cpu_percent'] = node["os"]["cpu_percent"]
+				metrics[first_key + '.os.load_average'] = node["os"]["load_average"]
+				metrics[first_key + '.os.mem.free_percent'] = node["os"]["mem"]["free_percent"]
+				metrics[first_key + '.os.mem.used_percent'] = node["os"]["mem"]["used_percent"]
+				metrics[first_key + '.os.swap.used_in_bytes'] = node["os"]["swap"]["used_in_bytes"]
+				metrics[first_key + '.jvm.mem.heap_used_percent'] = node["jvm"]["mem"]["heap_used_percent"]
+				metrics[first_key + '.indices.indexing.index_current'] = node["indices"]["indexing"]["index_current"]
+				metrics[first_key + '.indices.indexing.index_time_in_millis'] = node["indices"]["indexing"]["index_time_in_millis"]
+				metrics[first_key + '.indices.search.query_current'] = node["indices"]["search"]["query_current"]
+				metrics[first_key + '.indices.search.query_time_in_millis'] = node["indices"]["search"]["query_time_in_millis"]
+				metrics[first_key + '.indices.docs.count'] = node["indices"]["docs"]["count"]
+				metrics[first_key + '.indices.segments.count'] = node["indices"]["segments"]["count"]
+				metrics[first_key + '.jvm.gc.collectors.young.collection_count'] = node["jvm"]["gc"]["collectors"]["young"]["collection_count"]
+				metrics[first_key + '.jvm.gc.collectors.old.collection_count'] = node["jvm"]["gc"]["collectors"]["old"]["collection_count"]
 				metrics[first_key + '.fs.total.free_in_mbytes'] = node["fs"]["total"]["free_in_bytes"] / 1024 / 1024
 
 		return metrics
