@@ -1,0 +1,10 @@
+*.pyc
+\#*\#
+*.bak
+.wiki
+.Python
+bin/
+include/
+lib/
+stderr
+stdout
