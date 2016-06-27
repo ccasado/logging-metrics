@@ -75,7 +75,7 @@ def metricsByCluster():
 		sys.exit(1)
 
 def sendToStatsd(key, value):
-	stats.incr(key, value)
+	STATSD.incr(key, value)
 	#logging.debug("%s Sending to statsd - %s:%s") % (strftime("%d %b %Y %H:%M:%S", gmtime()), key, value)
 
 if __name__ == '__main__':
