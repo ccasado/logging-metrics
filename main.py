@@ -30,15 +30,20 @@ def metricsByNodes():
 				metrics[first_key + '.os.mem.used_percent'] = node["os"]["mem"]["used_percent"]
 				metrics[first_key + '.os.swap.used_in_bytes'] = node["os"]["swap"]["used_in_bytes"]
 				metrics[first_key + '.jvm.mem.heap_used_percent'] = node["jvm"]["mem"]["heap_used_percent"]
-				metrics[first_key + '.indices.indexing.index_current'] = node["indices"]["indexing"]["index_current"]
 				metrics[first_key + '.indices.indexing.index_time_in_millis'] = node["indices"]["indexing"]["index_time_in_millis"]
-				metrics[first_key + '.indices.search.query_current'] = node["indices"]["search"]["query_current"]
 				metrics[first_key + '.indices.search.query_time_in_millis'] = node["indices"]["search"]["query_time_in_millis"]
-				metrics[first_key + '.indices.docs.count'] = node["indices"]["docs"]["count"]
+				if docs_count_dict[node_name] is 0:
+					metrics[first_key + '.indices.docs.count'] = 0
+				else:
+					docs_count = node["indices"]["docs"]["count"] - docs_count_dict[node_name]
+					metrics[first_key + '.indices.docs.count'] = docs_count
 				metrics[first_key + '.indices.segments.count'] = node["indices"]["segments"]["count"]
 				metrics[first_key + '.jvm.gc.collectors.young.collection_count'] = node["jvm"]["gc"]["collectors"]["young"]["collection_count"]
 				metrics[first_key + '.jvm.gc.collectors.old.collection_count'] = node["jvm"]["gc"]["collectors"]["old"]["collection_count"]
 				metrics[first_key + '.fs.total.free_in_mbytes'] = node["fs"]["total"]["free_in_bytes"] / 1024 / 1024
+		for node in es_stats["nodes"].values():
+			node_name = node["name"]
+			docs_count_dict[node_name] = node["indices"]["docs"]["count"]
 
 		return metrics
 	else:
@@ -76,7 +81,7 @@ def metricsByCluster():
 
 def sendToStatsd(key, value):
 	STATSD.incr(key, value)
-	#logging.debug("%s Sending to statsd - %s:%s") % (strftime("%d %b %Y %H:%M:%S", gmtime()), key, value)
+	#print("%s Sending to statsd - %s:%s") % (strftime("%d %b %Y %H:%M:%S", gmtime()), key, value)
 
 if __name__ == '__main__':
 	logging.basicConfig(level=logging.INFO, format='%(levelname)s %(message)s')
@@ -101,6 +106,11 @@ if __name__ == '__main__':
 	STATSD_HOST = os.environ['STATSD_HOST']
 	STATSD_PORT = os.environ['STATSD_PORT']
 	STATSD = statsd.StatsClient(STATSD_HOST, STATSD_PORT)
+
+	docs_count_dict = {}
+	nodesname = [x.strip() for x in ESNODESNAME.split(',')]
+	for n in nodesname:
+		docs_count_dict[n] = 0
 	
 	s = sched.scheduler(time.time, time.sleep)
 	def goahed(sc):
