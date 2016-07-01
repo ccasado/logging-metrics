@@ -30,14 +30,18 @@ def metricsByNodes():
 				metrics[first_key + '.os.mem.used_percent'] = node["os"]["mem"]["used_percent"]
 				metrics[first_key + '.os.swap.used_in_bytes'] = node["os"]["swap"]["used_in_bytes"]
 				metrics[first_key + '.jvm.mem.heap_used_percent'] = node["jvm"]["mem"]["heap_used_percent"]
+				metrics[first_key + '.indices.indexing.index_total'] = node["indices"]["indexing"]["index_total"]
 				metrics[first_key + '.indices.indexing.index_time_in_millis'] = node["indices"]["indexing"]["index_time_in_millis"]
 				metrics[first_key + '.indices.search.query_time_in_millis'] = node["indices"]["search"]["query_time_in_millis"]
+				metrics[first_key + '.indices.search.query_total'] = node["indices"]["search"]["query_total"]
 				if docs_count_dict[node_name] is 0:
 					metrics[first_key + '.indices.docs.count'] = 0
 				else:
 					docs_count = node["indices"]["docs"]["count"] - docs_count_dict[node_name]
 					metrics[first_key + '.indices.docs.count'] = docs_count
 				metrics[first_key + '.indices.segments.count'] = node["indices"]["segments"]["count"]
+				metrics[first_key + '.indices.query_cache.hit_count'] = node["indices"]["query_cache"]["hit_count"]
+				metrics[first_key + '.indices.query_cache.miss_count'] = node["indices"]["query_cache"]["miss_count"]
 				metrics[first_key + '.jvm.gc.collectors.young.collection_count'] = node["jvm"]["gc"]["collectors"]["young"]["collection_count"]
 				metrics[first_key + '.jvm.gc.collectors.old.collection_count'] = node["jvm"]["gc"]["collectors"]["old"]["collection_count"]
 				metrics[first_key + '.fs.total.free_in_mbytes'] = node["fs"]["total"]["free_in_bytes"] / 1024 / 1024
