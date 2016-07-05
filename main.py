@@ -28,7 +28,7 @@ def metricsByNodes():
 				metrics[first_key + '.os.load_average'] = node["os"]["load_average"]
 				#metrics[first_key + '.os.mem.free_percent'] = node["os"]["mem"]["free_percent"]
 				#metrics[first_key + '.os.mem.used_percent'] = node["os"]["mem"]["used_percent"]
-				metrics[first_key + '.os.swap.used_in_bytes'] = node["os"]["swap"]["used_in_bytes"]
+				#metrics[first_key + '.os.swap.used_in_bytes'] = node["os"]["swap"]["used_in_bytes"]
 				metrics[first_key + '.jvm.mem.heap_used_percent'] = node["jvm"]["mem"]["heap_used_percent"]
 				if index_total_dict[node_name] is 0:
 					continue
