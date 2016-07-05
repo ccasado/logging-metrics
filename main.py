@@ -6,8 +6,8 @@ import json
 import argparse
 import sys
 import sched
-import time
 from time import gmtime, strftime
+import time
 import os
 import logging
 
@@ -113,8 +113,7 @@ def metricsByCluster():
 
 
 def GraylogMetrics():
-    graylog_url = "http://%s:%s/cluster/metrics/multiple" % (
-        GRAYLOG_API_HOST, GRAYLOG_API_PORT)
+    graylog_url = "http://%s:%s/cluster/metrics/multiple" % (GRAYLOG_API_HOST, GRAYLOG_API_PORT)
     headers = {'content-type': 'application/json'}
 
     payload = {"metrics": [
@@ -140,7 +139,8 @@ def GraylogMetrics():
 
 def sendToStatsd(key, value):
     STATSD.incr(key, value)
-    #print("%s Sending to statsd - %s:%s") % (strftime("%d %b %Y %H:%M:%S", gmtime()), key, value)
+    if verbose:
+        print "%s Sending to statsd - %s:%s" % (strftime("%d %b %Y %H:%M:%S", gmtime()), key, value)
 
 if __name__ == '__main__':
     logging.basicConfig(level=logging.INFO, format='%(levelname)s %(message)s')
@@ -148,19 +148,29 @@ if __name__ == '__main__':
         description='Logging statistics using Statsd, Graphite e Graphana.')
     parser.add_argument('--env', type=str, choices=['devqa', 'prod'], required=True,
                         help='Run the collect data on this environment')
+    parser.add_argument('--verbose', action="store_true", default=False, help='Verbose')
     args = parser.parse_args()
 
     ENV = args.env
+    verbose = args.verbose
     if ENV == 'prod':
         ESHOST = os.environ['ESHOST_PROD']
         ESPORT = os.environ['ESPORT_PROD']
         ESCLUSTERNAME = os.environ['ESCLUSTERNAME_PROD']
         ESNODESNAME = os.environ['ESNODESNAME_PROD']
+        GRAYLOG_USER = os.environ['GRAYLOG_USER_PROD']
+        GRAYLOG_PASSWORD = os.environ['GRAYLOG_PASSWORD_PROD']
+        GRAYLOG_API_HOST = os.environ['GRAYLOG_API_HOST_PROD']
+        GRAYLOG_API_PORT = os.environ['GRAYLOG_API_PORT_PROD']
     else:
         ESHOST = os.environ['ESHOST_DEVQA']
         ESPORT = os.environ['ESPORT_DEVQA']
         ESCLUSTERNAME = os.environ['ESCLUSTERNAME_DEVQA']
         ESNODESNAME = os.environ['ESNODESNAME_DEVQA']
+        GRAYLOG_USER = os.environ['GRAYLOG_USER_DEVQA']
+        GRAYLOG_PASSWORD = os.environ['GRAYLOG_PASSWORD_DEVQA']
+        GRAYLOG_API_HOST = os.environ['GRAYLOG_API_HOST_DEVQA']
+        GRAYLOG_API_PORT = os.environ['GRAYLOG_API_PORT_DEVQA']
 
     PROJECT = os.environ['PROJECT']
     STATSD_HOST = os.environ['STATSD_HOST']
@@ -179,6 +189,7 @@ if __name__ == '__main__':
     s = sched.scheduler(time.time, time.sleep)
 
     def goahed(sc):
+        # GraylogMetrics()
         for key, value in metricsByNodes().iteritems():
             sendToStatsd(key, value)
         for key, value in metricsByCluster().iteritems():
