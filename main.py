@@ -134,6 +134,7 @@ def GraylogMetrics():
         for m in metrics[node]['metrics']:
             key = "glog.graylog." + ENV + '.' + node + '.' + m['full_name']
             value = m['metric']['value']
+            print key, value
             sendToStatsd(key, value)
 
 
