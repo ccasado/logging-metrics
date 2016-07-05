@@ -70,16 +70,14 @@ def metricsByNodes():
         for node in es_stats["nodes"].values():
             node_name = node["name"]
             docs_count_dict[node_name] = node["indices"]["docs"]["count"]
-            index_total_dict[node_name] = node[
-                "indices"]["indexing"]["index_total"]
-            query_total_dict[node_name] = node[
-                "indices"]["search"]["query_total"]
+            index_total_dict[node_name] = node["indices"]["indexing"]["index_total"]
+            query_total_dict[node_name] = node["indices"]["search"]["query_total"]
 
-                return metrics
-        else:
-            logging.error(
-                "Cluster data not available. Check ESCLUSTERNAME in your variables.")
-            sys.exit(1)
+        return metrics
+    else:
+        logging.error(
+            "Cluster data not available. Check ESCLUSTERNAME in your variables.")
+        sys.exit(1)
 
 
 def metricsByCluster():
