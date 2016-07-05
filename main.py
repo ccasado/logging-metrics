@@ -134,7 +134,6 @@ def GraylogMetrics():
         for m in metrics[node]['metrics']:
             key = "glog.graylog." + ENV + '.' + node + '.' + m['full_name']
             value = m['metric']['value']
-            print key, value
             sendToStatsd(key, value)
 
 
@@ -159,10 +158,10 @@ if __name__ == '__main__':
         ESPORT = os.environ['ESPORT_PROD']
         ESCLUSTERNAME = os.environ['ESCLUSTERNAME_PROD']
         ESNODESNAME = os.environ['ESNODESNAME_PROD']
-        # GRAYLOG_USER = os.environ['GRAYLOG_USER_PROD']
-        # GRAYLOG_PASSWORD = os.environ['GRAYLOG_PASSWORD_PROD']
-        # GRAYLOG_API_HOST = os.environ['GRAYLOG_API_HOST_PROD']
-        # GRAYLOG_API_PORT = os.environ['GRAYLOG_API_PORT_PROD']
+        GRAYLOG_USER = os.environ['GRAYLOG_USER_PROD']
+        GRAYLOG_PASSWORD = os.environ['GRAYLOG_PASSWORD_PROD']
+        GRAYLOG_API_HOST = os.environ['GRAYLOG_API_HOST_PROD']
+        GRAYLOG_API_PORT = os.environ['GRAYLOG_API_PORT_PROD']
     else:
         ESHOST = os.environ['ESHOST_DEVQA']
         ESPORT = os.environ['ESPORT_DEVQA']
