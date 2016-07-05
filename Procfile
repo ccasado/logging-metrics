@@ -1,1 +1,2 @@
-script: python main.py --env devqa 
+scriptdevqa: python main.py --env devqa 
+scriptprod: python main.py --env prod

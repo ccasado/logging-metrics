@@ -13,7 +13,7 @@ import logging
 def metricsByNodes():
 	try:
 		url = 'http://' + ESHOST + ':' + ESPORT + '/_nodes/stats'
-		r = requests.get(url, timeout=1.000)
+		r = requests.get(url, timeout=3.000)
 	except requests.exceptions.RequestException as e:
 		logging.exception(e)
 		sys.exit(1)
@@ -26,19 +26,38 @@ def metricsByNodes():
 				first_key = PROJECT + '.' + ENV + '.' + ESCLUSTERNAME + '.' + node_name 
 				metrics[first_key + '.os.cpu_percent'] = node["os"]["cpu_percent"]
 				metrics[first_key + '.os.load_average'] = node["os"]["load_average"]
-				metrics[first_key + '.os.mem.free_percent'] = node["os"]["mem"]["free_percent"]
-				metrics[first_key + '.os.mem.used_percent'] = node["os"]["mem"]["used_percent"]
-				metrics[first_key + '.os.swap.used_in_bytes'] = node["os"]["swap"]["used_in_bytes"]
+				#metrics[first_key + '.os.mem.free_percent'] = node["os"]["mem"]["free_percent"]
+				#metrics[first_key + '.os.mem.used_percent'] = node["os"]["mem"]["used_percent"]
+				#metrics[first_key + '.os.swap.used_in_bytes'] = node["os"]["swap"]["used_in_bytes"]
 				metrics[first_key + '.jvm.mem.heap_used_percent'] = node["jvm"]["mem"]["heap_used_percent"]
-				metrics[first_key + '.indices.indexing.index_current'] = node["indices"]["indexing"]["index_current"]
+				if index_total_dict[node_name] is 0:
+					continue
+				else:
+					index_total = node["indices"]["indexing"]["index_total"]
+					metrics[first_key + '.indices.indexing.index_total'] = index_total - index_total_dict[node_name]
 				metrics[first_key + '.indices.indexing.index_time_in_millis'] = node["indices"]["indexing"]["index_time_in_millis"]
-				metrics[first_key + '.indices.search.query_current'] = node["indices"]["search"]["query_current"]
 				metrics[first_key + '.indices.search.query_time_in_millis'] = node["indices"]["search"]["query_time_in_millis"]
-				metrics[first_key + '.indices.docs.count'] = node["indices"]["docs"]["count"]
+				if query_total_dict[node_name] is 0:
+					continue
+				else:
+					query_total = node["indices"]["search"]["query_total"]
+					metrics[first_key + '.indices.search.query_total'] = query_total - query_total_dict[node_name]
+				if docs_count_dict[node_name] is 0:
+					continue
+				else:
+					docs_count = node["indices"]["docs"]["count"]
+					metrics[first_key + '.indices.docs.count'] = docs_count - docs_count_dict[node_name]
 				metrics[first_key + '.indices.segments.count'] = node["indices"]["segments"]["count"]
+				metrics[first_key + '.indices.query_cache.hit_count'] = node["indices"]["query_cache"]["hit_count"]
+				metrics[first_key + '.indices.query_cache.miss_count'] = node["indices"]["query_cache"]["miss_count"]
 				metrics[first_key + '.jvm.gc.collectors.young.collection_count'] = node["jvm"]["gc"]["collectors"]["young"]["collection_count"]
 				metrics[first_key + '.jvm.gc.collectors.old.collection_count'] = node["jvm"]["gc"]["collectors"]["old"]["collection_count"]
 				metrics[first_key + '.fs.total.free_in_mbytes'] = node["fs"]["total"]["free_in_bytes"] / 1024 / 1024
+		for node in es_stats["nodes"].values():
+			node_name = node["name"]
+			docs_count_dict[node_name] = node["indices"]["docs"]["count"]
+			index_total_dict[node_name] = node["indices"]["indexing"]["index_total"]
+			query_total_dict[node_name] = node["indices"]["search"]["query_total"]
 
 		return metrics
 	else:
@@ -49,7 +68,7 @@ def metricsByCluster():
 	try:
 		url = 'http://' + ESHOST + ':' + ESPORT + '/_cluster/health'
 		payload = {'level': 'shards'}
-		r = requests.get(url, params=payload, timeout=1.000)
+		r = requests.get(url, params=payload, timeout=3.000)
 	except requests.exceptions.RequestException as e:
 		logging.exception(e)
 		sys.exit(1)
@@ -75,8 +94,8 @@ def metricsByCluster():
 		sys.exit(1)
 
 def sendToStatsd(key, value):
-	STATSD.incr(key, value)
-	#logging.debug("%s Sending to statsd - %s:%s") % (strftime("%d %b %Y %H:%M:%S", gmtime()), key, value)
+	#STATSD.incr(key, value)
+	print("%s Sending to statsd - %s:%s") % (strftime("%d %b %Y %H:%M:%S", gmtime()), key, value)
 
 if __name__ == '__main__':
 	logging.basicConfig(level=logging.INFO, format='%(levelname)s %(message)s')
@@ -101,6 +120,15 @@ if __name__ == '__main__':
 	STATSD_HOST = os.environ['STATSD_HOST']
 	STATSD_PORT = os.environ['STATSD_PORT']
 	STATSD = statsd.StatsClient(STATSD_HOST, STATSD_PORT)
+
+	docs_count_dict = {}
+	index_total_dict = {}
+	query_total_dict = {}
+	nodesname = [x.strip() for x in ESNODESNAME.split(',')]
+	for n in nodesname:
+		docs_count_dict[n] = 0
+		index_total_dict[n] = 0
+		query_total_dict[n] = 0
 	
 	s = sched.scheduler(time.time, time.sleep)
 	def goahed(sc):
