@@ -26,9 +26,6 @@ def metricsByNodes():
 				first_key = PROJECT + '.' + ENV + '.' + ESCLUSTERNAME + '.' + node_name 
 				metrics[first_key + '.os.cpu_percent'] = node["os"]["cpu_percent"]
 				metrics[first_key + '.os.load_average'] = node["os"]["load_average"]
-				#metrics[first_key + '.os.mem.free_percent'] = node["os"]["mem"]["free_percent"]
-				#metrics[first_key + '.os.mem.used_percent'] = node["os"]["mem"]["used_percent"]
-				#metrics[first_key + '.os.swap.used_in_bytes'] = node["os"]["swap"]["used_in_bytes"]
 				metrics[first_key + '.jvm.mem.heap_used_percent'] = node["jvm"]["mem"]["heap_used_percent"]
 				if index_total_dict[node_name] is 0:
 					continue
@@ -36,6 +33,8 @@ def metricsByNodes():
 					index_total = node["indices"]["indexing"]["index_total"]
 					metrics[first_key + '.indices.indexing.index_total'] = index_total - index_total_dict[node_name]
 				metrics[first_key + '.indices.indexing.index_time_in_millis'] = node["indices"]["indexing"]["index_time_in_millis"]
+				metrics[first_key + '.indices.query_cache.memory_size_in_bytes'] = node["indices"]["query_cache"]["memory_size_in_bytes"]
+				metrics[first_key + '.indices.query_cache.evictions'] = node["indices"]["query_cache"]["evictions"]
 				metrics[first_key + '.indices.search.query_time_in_millis'] = node["indices"]["search"]["query_time_in_millis"]
 				if query_total_dict[node_name] is 0:
 					continue
