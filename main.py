@@ -189,7 +189,7 @@ if __name__ == '__main__':
     s = sched.scheduler(time.time, time.sleep)
 
     def goahed(sc):
-        # GraylogMetrics()
+        GraylogMetrics()
         for key, value in metricsByNodes().iteritems():
             sendToStatsd(key, value)
         for key, value in metricsByCluster().iteritems():
