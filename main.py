@@ -29,7 +29,7 @@ def metricsByNodes():
                 metrics[first_key + '.os.cpu_percent'] = node["os"]["cpu_percent"]
                 metrics[first_key + '.os.load_average'] = node["os"]["load_average"]
                 metrics[first_key + '.indices.query_cache.memory_size_in_bytes'] = node["indices"]["query_cache"]["memory_size_in_bytes"]
-				metrics[first_key + '.indices.query_cache.evictions'] = node["indices"]["query_cache"]["evictions"]
+                metrics[first_key + '.indices.query_cache.evictions'] = node["indices"]["query_cache"]["evictions"]
                 metrics[
                     first_key + '.jvm.mem.heap_used_percent'] = node["jvm"]["mem"]["heap_used_percent"]
                 if index_total_dict[node_name] is 0:
@@ -131,8 +131,11 @@ def GraylogMetrics():
     metrics = resp.json()
     for node in metrics:
         for m in metrics[node]['metrics']:
+            bit_to_byte = 1
             key = "glog.graylog." + ENV + '.' + node + '.' + m['full_name']
-            value = m['metric']['value']
+            if m['full_name'].startswith('jvm.memory.heap'):
+                bit_to_byte = 1024
+            value = m['metric']['value']/bit_to_byte
             sendToStatsd(key, value)
 
 
