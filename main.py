@@ -120,8 +120,9 @@ def GraylogMetrics():
         "org.graylog2.throughput.output.1-sec-rate",
         # "org.graylog2.journal.append.1-sec-rate",
         # "org.graylog2.journal.read.1-sec-rate",
-        "org.graylog2.journal.size",
-        "org.graylog2.journal.size-limit",
+        # "org.graylog2.journal.size",
+        # "org.graylog2.journal.size-limit",
+        "org.graylog2.journal.utilization-ratio"
         # "org.graylog2.journal.segments",
         # "org.graylog2.journal.entries-uncommitted",
         "jvm.memory.heap.used",
