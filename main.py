@@ -118,10 +118,12 @@ def GraylogMetrics():
     payload = {"metrics": [
         "org.graylog2.throughput.input.1-sec-rate",
         "org.graylog2.throughput.output.1-sec-rate",
-        "org.graylog2.journal.append.1-sec-rate",
-        "org.graylog2.journal.read.1-sec-rate",
-        "org.graylog2.journal.segments",
-        "org.graylog2.journal.entries-uncommitted",
+        # "org.graylog2.journal.append.1-sec-rate",
+        # "org.graylog2.journal.read.1-sec-rate",
+        "org.graylog2.journal.size",
+        "org.graylog2.journal.size-limit",
+        # "org.graylog2.journal.segments",
+        # "org.graylog2.journal.entries-uncommitted",
         "jvm.memory.heap.used",
         "jvm.memory.heap.committed",
         "jvm.memory.heap.max"
@@ -133,7 +135,7 @@ def GraylogMetrics():
         for m in metrics[node]['metrics']:
             bit_to_byte = 1
             key = "glog.graylog." + ENV + '.' + node + '.' + m['full_name']
-            if m['full_name'].startswith('jvm.memory.heap'):
+            if m['full_name'].startswith(('jvm.memory.heap', 'org.graylog2.journal.size')):
                 bit_to_byte = 1024
             value = m['metric']['value']/bit_to_byte
             sendToStatsd(key, value)
