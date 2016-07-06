@@ -29,7 +29,7 @@ def metricsByNodes():
                 metrics[first_key + '.os.cpu_percent'] = node["os"]["cpu_percent"]
                 metrics[first_key + '.os.load_average'] = node["os"]["load_average"]
                 metrics[first_key + '.indices.query_cache.memory_size_in_bytes'] = node["indices"]["query_cache"]["memory_size_in_bytes"]
-				metrics[first_key + '.indices.query_cache.evictions'] = node["indices"]["query_cache"]["evictions"]
+                metrics[first_key + '.indices.query_cache.evictions'] = node["indices"]["query_cache"]["evictions"]
                 metrics[
                     first_key + '.jvm.mem.heap_used_percent'] = node["jvm"]["mem"]["heap_used_percent"]
                 if index_total_dict[node_name] is 0:
