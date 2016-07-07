@@ -129,8 +129,12 @@ def GraylogMetrics():
         "jvm.memory.heap.committed",
         "jvm.memory.heap.max"
     ]}
-    resp = requests.post(graylog_url, data=json.dumps(payload), auth=(
-        GRAYLOG_USER, GRAYLOG_PASSWORD), headers=headers)
+    try:
+        resp = requests.post(graylog_url, data=json.dumps(payload), auth=(
+            GRAYLOG_USER, GRAYLOG_PASSWORD), headers=headers, timeout=3.000)
+    except requests.exceptions.RequestException as e:
+        logging.exception(e)
+        return
     metrics = resp.json()
     for node in metrics:
         for m in metrics[node]['metrics']:
