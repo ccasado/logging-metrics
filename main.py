@@ -11,14 +11,13 @@ import time
 import os
 import logging
 
-
 def metricsByNodes():
     try:
         url = 'http://' + ESHOST + ':' + ESPORT + '/_nodes/stats'
         r = requests.get(url, timeout=3.000)
     except requests.exceptions.RequestException as e:
         logging.exception(e)
-        sys.exit(1)
+        return
     es_stats = json.loads(r.text)
     if ESCLUSTERNAME == es_stats["cluster_name"]:
         metrics = {}
@@ -30,42 +29,30 @@ def metricsByNodes():
                 metrics[first_key + '.os.load_average'] = node["os"]["load_average"]
                 metrics[first_key + '.indices.query_cache.memory_size_in_bytes'] = node["indices"]["query_cache"]["memory_size_in_bytes"]
                 metrics[first_key + '.indices.query_cache.evictions'] = node["indices"]["query_cache"]["evictions"]
-                metrics[
-                    first_key + '.jvm.mem.heap_used_percent'] = node["jvm"]["mem"]["heap_used_percent"]
+                metrics[first_key + '.jvm.mem.heap_used_percent'] = node["jvm"]["mem"]["heap_used_percent"]
                 if index_total_dict[node_name] is 0:
                     continue
                 else:
                     index_total = node["indices"]["indexing"]["index_total"]
-                    metrics[first_key + '.indices.indexing.index_total'] = index_total - \
-                        index_total_dict[node_name]
-                metrics[first_key + '.indices.indexing.index_time_in_millis'] = node[
-                    "indices"]["indexing"]["index_time_in_millis"]
-                metrics[first_key + '.indices.search.query_time_in_millis'] = node[
-                    "indices"]["search"]["query_time_in_millis"]
+                    metrics[first_key + '.indices.indexing.index_total'] = index_total - index_total_dict[node_name]
+                metrics[first_key + '.indices.indexing.index_time_in_millis'] = node["indices"]["indexing"]["index_time_in_millis"]
+                metrics[first_key + '.indices.search.query_time_in_millis'] = node["indices"]["search"]["query_time_in_millis"]
                 if query_total_dict[node_name] is 0:
                     continue
                 else:
                     query_total = node["indices"]["search"]["query_total"]
-                    metrics[first_key + '.indices.search.query_total'] = query_total - \
-                        query_total_dict[node_name]
+                    metrics[first_key + '.indices.search.query_total'] = query_total - query_total_dict[node_name]
                 if docs_count_dict[node_name] is 0:
                     continue
                 else:
                     docs_count = node["indices"]["docs"]["count"]
-                    metrics[first_key + '.indices.docs.count'] = docs_count - \
-                        docs_count_dict[node_name]
-                metrics[
-                    first_key + '.indices.segments.count'] = node["indices"]["segments"]["count"]
-                metrics[first_key + '.indices.query_cache.hit_count'] = node[
-                    "indices"]["query_cache"]["hit_count"]
-                metrics[first_key + '.indices.query_cache.miss_count'] = node[
-                    "indices"]["query_cache"]["miss_count"]
-                metrics[first_key + '.jvm.gc.collectors.young.collection_count'] = node[
-                    "jvm"]["gc"]["collectors"]["young"]["collection_count"]
-                metrics[first_key + '.jvm.gc.collectors.old.collection_count'] = node[
-                    "jvm"]["gc"]["collectors"]["old"]["collection_count"]
-                metrics[first_key + '.fs.total.free_in_mbytes'] = node[
-                    "fs"]["total"]["free_in_bytes"] / 1024 / 1024
+                    metrics[first_key + '.indices.docs.count'] = docs_count - docs_count_dict[node_name]
+                metrics[first_key + '.indices.segments.count'] = node["indices"]["segments"]["count"]
+                metrics[first_key + '.indices.query_cache.hit_count'] = node["indices"]["query_cache"]["hit_count"]
+                metrics[first_key + '.indices.query_cache.miss_count'] = node["indices"]["query_cache"]["miss_count"]
+                metrics[first_key + '.jvm.gc.collectors.young.collection_count'] = node["jvm"]["gc"]["collectors"]["young"]["collection_count"]
+                metrics[first_key + '.jvm.gc.collectors.old.collection_count'] = node["jvm"]["gc"]["collectors"]["old"]["collection_count"]
+                metrics[first_key + '.fs.total.free_in_mbytes'] = node["fs"]["total"]["free_in_bytes"] / 1024 / 1024
         for node in es_stats["nodes"].values():
             node_name = node["name"]
             docs_count_dict[node_name] = node["indices"]["docs"]["count"]
@@ -86,7 +73,7 @@ def metricsByCluster():
         r = requests.get(url, params=payload, timeout=3.000)
     except requests.exceptions.RequestException as e:
         logging.exception(e)
-        sys.exit(1)
+        return
     es_stats = json.loads(r.text)
     if ESCLUSTERNAME == es_stats["cluster_name"]:
         metrics = {}
@@ -99,8 +86,7 @@ def metricsByCluster():
             status = 2
         metrics[first_key + '.status'] = status
         metrics[first_key + '.active_shards'] = es_stats["active_shards"]
-        metrics[first_key +
-                '.active_primary_shards'] = es_stats["active_primary_shards"]
+        metrics[first_key + '.active_primary_shards'] = es_stats["active_primary_shards"]
         metrics[first_key + '.relocating_shards'] = es_stats["relocating_shards"]
         metrics[first_key + '.initializing_shards'] = es_stats["initializing_shards"]
         metrics[first_key + '.unassigned_shards'] = es_stats["unassigned_shards"]
@@ -130,8 +116,12 @@ def GraylogMetrics():
         "jvm.memory.heap.max",
         "system.lbstatus"
     ]}
-    resp = requests.post(graylog_url, data=json.dumps(payload), auth=(
-        GRAYLOG_USER, GRAYLOG_PASSWORD), headers=headers)
+    try:
+        resp = requests.post(graylog_url, data=json.dumps(payload), auth=(
+            GRAYLOG_USER, GRAYLOG_PASSWORD), headers=headers, timeout=3.000)
+    except requests.exceptions.RequestException as e:
+        logging.exception(e)
+        return
     metrics = resp.json()
     for node in metrics:
         for m in metrics[node]['metrics']:
