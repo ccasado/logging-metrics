@@ -127,7 +127,8 @@ def GraylogMetrics():
         # "org.graylog2.journal.entries-uncommitted",
         "jvm.memory.heap.used",
         "jvm.memory.heap.committed",
-        "jvm.memory.heap.max"
+        "jvm.memory.heap.max",
+        "system.lbstatus"
     ]}
     resp = requests.post(graylog_url, data=json.dumps(payload), auth=(
         GRAYLOG_USER, GRAYLOG_PASSWORD), headers=headers)
@@ -201,5 +202,5 @@ if __name__ == '__main__':
             sendToStatsd(key, value)
         sc.enter(10, 1, goahed, (sc,))
 
-    s.enter(10, 1, goahed, (s,))
+    s.enter(5, 1, goahed, (s,))
     s.run()
