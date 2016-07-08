@@ -190,7 +190,7 @@ if __name__ == '__main__':
             sendToStatsd(key, value)
         for key, value in metricsByCluster().iteritems():
             sendToStatsd(key, value)
-        sc.enter(10, 1, goahed, (sc,))
+        sc.enter(1, 1, goahed, (sc,))
 
     s.enter(5, 1, goahed, (s,))
     s.run()
