@@ -192,5 +192,5 @@ if __name__ == '__main__':
             sendToStatsd(key, value)
         sc.enter(1, 1, goahed, (sc,))
 
-    s.enter(5, 1, goahed, (s,))
+    s.enter(1, 1, goahed, (s,))
     s.run()
