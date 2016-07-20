@@ -11,10 +11,12 @@ import time
 import os
 import logging
 
+pooling_interval_in_seconds = 10
+
 def metricsByNodes():
     try:
         url = 'http://' + ESHOST + ':' + ESPORT + '/_nodes/stats'
-        r = requests.get(url, timeout=3.000)
+        r = requests.get(url, timeout=10.000)
     except requests.exceptions.RequestException as e:
         logging.exception(e)
         return
@@ -34,14 +36,14 @@ def metricsByNodes():
                     continue
                 else:
                     index_total = node["indices"]["indexing"]["index_total"]
-                    metrics[first_key + '.indices.indexing.index_total'] = index_total - index_total_dict[node_name]
+                    metrics[first_key + '.indices.indexing.index_total'] = (index_total - index_total_dict[node_name])/pooling_interval_in_seconds
                 metrics[first_key + '.indices.indexing.index_time_in_millis'] = node["indices"]["indexing"]["index_time_in_millis"]
                 metrics[first_key + '.indices.search.query_time_in_millis'] = node["indices"]["search"]["query_time_in_millis"]
                 if query_total_dict[node_name] is 0:
                     continue
                 else:
                     query_total = node["indices"]["search"]["query_total"]
-                    metrics[first_key + '.indices.search.query_total'] = query_total - query_total_dict[node_name]
+                    metrics[first_key + '.indices.search.query_total'] = (query_total - query_total_dict[node_name])/pooling_interval_in_seconds
                 if docs_count_dict[node_name] is 0:
                     continue
                 else:
@@ -90,6 +92,8 @@ def metricsByCluster():
         metrics[first_key + '.relocating_shards'] = es_stats["relocating_shards"]
         metrics[first_key + '.initializing_shards'] = es_stats["initializing_shards"]
         metrics[first_key + '.unassigned_shards'] = es_stats["unassigned_shards"]
+        if verbose:
+            print "%s" % metrics
         return metrics
     else:
         logging.error(
@@ -190,7 +194,7 @@ if __name__ == '__main__':
             sendToStatsd(key, value)
         for key, value in metricsByCluster().iteritems():
             sendToStatsd(key, value)
-        sc.enter(10, 1, goahed, (sc,))
+        sc.enter(pooling_interval_in_seconds, 1, goahed, (sc,))
 
-    s.enter(10, 1, goahed, (s,))
+    s.enter(pooling_interval_in_seconds, 1, goahed, (s,))
     s.run()
